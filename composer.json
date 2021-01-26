@@ -1,0 +1,24 @@
+{
+    "name": "citizenzet/php-kernel",
+    "license": "BSD-3-Clause",
+    "description": "package under development",
+    "authors": [
+        {
+            "name": "Olzhas Kulzhambekov",
+            "email": "exgamer@live.ru"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Citizenzet\\Php\\Core\\": "src"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.0-dev"
+        }
+    }
+}
