@@ -1,9 +1,8 @@
 <?php
 
-namespace Citizenzet\Php\Core\Services;
+namespace Citizenzet\Php\Core\Repositories;
 
 use Citizenzet\Php\Core\Interfaces\CrudRepositoryInterface;
-use Citizenzet\Php\Core\Repositories\Repository;
 
 /**
  * Class CrudRepository
