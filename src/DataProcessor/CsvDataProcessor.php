@@ -3,6 +3,7 @@
 namespace Citizenzet\Php\Core\DataProcessor;
 
 use Citizenzet\Php\Core\Components\Logger;
+use Citizenzet\Php\Core\Components\ProgressBar;
 use Exception;
 use GuzzleHttp\Client;
 
@@ -42,16 +43,17 @@ class CsvDataProcessor extends DataProcessor
         $row = 1;
         if (($handle = fopen($this->dataHandler->getQuery(), "r")) !== FALSE) {
             Logger::info("START PROCESS");
-//            Console::startProgress(0, $count);
+            $bar = new ProgressBar($count);
             while (($model = fgetcsv($handle, 0, $this->dataHandler->getDelimeter())) !== FALSE) {
                 $this->prepareModel($model);
                 $this->processModel($model);
                 $this->finishProcessModel($model);
-//                Console::updateProgress($row , $count);
+                $bar->update();
                 $row++;
             }
             fclose($handle);
             $memory = memory_get_usage()/1024;
+            echo PHP_EOL;
             Logger::info("END PROCESS ; MEMORY USED: {$memory}");
         }
 

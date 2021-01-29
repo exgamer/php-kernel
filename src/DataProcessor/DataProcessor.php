@@ -2,6 +2,8 @@
 
 namespace Citizenzet\Php\Core\DataProcessor;
 
+use Citizenzet\Php\Core\Components\Logger;
+use Citizenzet\Php\Core\Components\ProgressBar;
 use Citizenzet\Php\Core\Helpers\ContainerHelper;
 use Citizenzet\Php\Core\Traits\ConfigAwareConstructorTrait;
 use Citizenzet\Php\Core\Traits\DataTrait;
@@ -50,7 +52,7 @@ class DataProcessor
     public function printMemoryUsage($message = '')
     {
         $memory = memory_get_usage();
-//        $this->outputSuccess( "MEMORY USED : " . ($memory/(1024) ) . " - " . $message, 'red');
+        Logger::info("MEMORY USED : " . ($memory/(1024) ) . " - " . $message);
     }
 
     public static function exec($config)
@@ -85,7 +87,7 @@ class DataProcessor
                 gc_collect_cycles();
                 $this->_execute();
             } catch (\Exception $dbEx){
-//                Yii::error($dbEx->getMessage());
+                Logger::error($dbEx->getMessage());
                 $this->noDbConnectionExceptionActions([], $dbEx);
                 continue;
             }
@@ -111,16 +113,16 @@ class DataProcessor
             $currentPage = 0;
         }
 
-//        $this->outputSuccess( "START PROCESS PAGE : " . $currentPage . " of " . $pagesCount );
+        Logger::error("START PROCESS PAGE : " . $currentPage . " of " . $pagesCount);
         $this->beforePageProcess();
         $count = count($models);
-//        Console::startProgress(0, $count);
+        $bar = new ProgressBar($count);
         foreach ($models as $k => $model) {
             try{
                 $this->prepareModel($model);
                 $this->processModel($model);
                 $this->finishProcessModel($model);
-//                Console::updateProgress($k + 1 , $count);
+                $bar->update();
             } catch (\Exception $dbEx){
                 $this->noDbConnectionExceptionActions($model, $dbEx);
                 continue;
@@ -131,9 +133,10 @@ class DataProcessor
             $this->isDone = true;
         }
 
+        echo PHP_EOL;
         $models = null;
         $memory = memory_get_usage()/1024;
-//        $this->outputSuccess( "END PROCESS PAGE : "  . $currentPage . " of " . $pagesCount . "; MEMORY USED: {$memory}");
+        Logger::error("END PROCESS PAGE : "  . $currentPage . " of " . $pagesCount . "; MEMORY USED: {$memory}");
 
         return true;
     }
@@ -267,7 +270,7 @@ class DataProcessor
      */
     public function noDbConnectionExceptionActions($data, $exception)
     {
-        echo " ОШИБКА!!!  ".$exception->getMessage().PHP_EOL;
+        Logger::error( " ОШИБКА!!!  ".$exception->getMessage().PHP_EOL);
     }
 
     /**
