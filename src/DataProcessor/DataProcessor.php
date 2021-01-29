@@ -163,6 +163,7 @@ class DataProcessor
      */
     protected function executeQuery()
     {
+        //@TODO просто заглушка для тестов
         $dbh = new PDO('mysql:dbname=jmart;host=db', 'root', '123');
         $offset = $this->pageSize * (int) ($this->currentPage);
         $sth = $dbh->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM `cscart_companies` LIMIT {$this->pageSize} OFFSET {$offset}");
