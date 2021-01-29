@@ -2,6 +2,7 @@
 
 namespace Citizenzet\Php\Core\DataProcessor;
 
+use Citizenzet\Php\Core\Traits\ConfigAwareConstructorTrait;
 use Citizenzet\Php\Core\Traits\DataTrait;
 
 /**
@@ -26,6 +27,7 @@ use Citizenzet\Php\Core\Traits\DataTrait;
  */
 class DataProcessor
 {
+    use ConfigAwareConstructorTrait;
     use DataTrait;
 
     public $dataHandlerClass;

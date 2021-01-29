@@ -2,6 +2,7 @@
 
 namespace Citizenzet\Php\Core\DataProcessor;
 
+use Citizenzet\Php\Core\Components\Logger;
 use Exception;
 use GuzzleHttp\Client;
 
@@ -40,7 +41,7 @@ class CsvDataProcessor extends DataProcessor
         $count = $this->getCsvRowsCount();
         $row = 1;
         if (($handle = fopen($this->dataHandler->getQuery(), "r")) !== FALSE) {
-//            $this->outputSuccess( "START PROCESS" );
+            Logger::info("START PROCESS");
 //            Console::startProgress(0, $count);
             while (($model = fgetcsv($handle, 0, $this->dataHandler->getDelimeter())) !== FALSE) {
                 $this->prepareModel($model);
@@ -51,7 +52,7 @@ class CsvDataProcessor extends DataProcessor
             }
             fclose($handle);
             $memory = memory_get_usage()/1024;
-//            $this->outputSuccess( "END PROCESS ; MEMORY USED: {$memory}");
+            Logger::info("END PROCESS ; MEMORY USED: {$memory}");
         }
 
         $this->afterExecute();
@@ -61,7 +62,7 @@ class CsvDataProcessor extends DataProcessor
 
     public function getCsvRowsCount()
     {
-//        $this->outputSuccess( "Counting rows" );
+        Logger::info("Counting rows" );
         $rowCount = 1;
         $handle = fopen($this->dataHandler->getQuery(), "r");
         while(!feof($handle)){
@@ -70,7 +71,7 @@ class CsvDataProcessor extends DataProcessor
         }
 
         fclose($handle);
-//        $this->outputSuccess( "File has " . $rowCount . " rows" );
+        Logger::info("File has " . $rowCount . " rows"  );
 
         return $rowCount;
     }
