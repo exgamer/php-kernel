@@ -60,7 +60,6 @@ class DataProcessor
 
     public function init()
     {
-        parent::init();
         $class = $this->dataHandlerClass;
         $this->dataHandler = new $class();
         $this->dataHandler->setProcessor($this);
