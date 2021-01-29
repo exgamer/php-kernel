@@ -2,6 +2,7 @@
 
 namespace Citizenzet\Php\Core\DataProcessor;
 
+use Citizenzet\Php\Core\Helpers\ContainerHelper;
 use Citizenzet\Php\Core\Traits\ConfigAwareConstructorTrait;
 use Citizenzet\Php\Core\Traits\DataTrait;
 
@@ -60,8 +61,7 @@ class DataProcessor
 
     public function init()
     {
-        $class = $this->dataHandlerClass;
-        $this->dataHandler = new $class();
+        $this->dataHandler = ContainerHelper::createObject($this->dataHandlerClass);
         $this->dataHandler->setProcessor($this);
         $this->timeStart =  date('Y-m-d H:i:s');
     }
