@@ -7,6 +7,7 @@ use Citizenzet\Php\Core\Components\ProgressBar;
 use Citizenzet\Php\Core\Helpers\ContainerHelper;
 use Citizenzet\Php\Core\Traits\ConfigAwareConstructorTrait;
 use Citizenzet\Php\Core\Traits\DataTrait;
+use PDO;
 
 /**
  * Class DataProcessor
@@ -44,6 +45,7 @@ class DataProcessor
     public $totalCount;
     public $currentPage = 0;
     public $targetPage = 0;
+    public $pageCount = 0;
     public $bySinglePage = false;
 
     /** @var \DateTime Время начала выполнения скрипта */
@@ -87,7 +89,7 @@ class DataProcessor
                 gc_collect_cycles();
                 $this->_execute();
             } catch (\Exception $dbEx){
-                Logger::error($dbEx->getMessage());
+                Logger::info($dbEx->getMessage());
                 $this->noDbConnectionExceptionActions([], $dbEx);
                 continue;
             }
@@ -106,25 +108,25 @@ class DataProcessor
      */
     public function _execute()
     {
-        $models = $this->executeQuery();
+        $rows= $this->executeQuery();
         $pagesCount = ceil($this->totalCount/$this->pageSize);
         $currentPage = $this->currentPage;
         if ($pagesCount == 0) {
             $currentPage = 0;
         }
 
-        Logger::error("START PROCESS PAGE : " . $currentPage . " of " . $pagesCount);
+        Logger::info("START PROCESS PAGE : " . $currentPage . " of " . $pagesCount);
         $this->beforePageProcess();
-        $count = count($models);
+        $count = count($rows);
         $bar = new ProgressBar($count);
-        foreach ($models as $k => $model) {
+        foreach ($rows as $k => $row) {
             try{
-                $this->prepareModel($model);
-                $this->processModel($model);
-                $this->finishProcessModel($model);
+                $this->prepareModel($row);
+                $this->processModel($row);
+                $this->finishProcessModel($row);
                 $bar->update();
             } catch (\Exception $dbEx){
-                $this->noDbConnectionExceptionActions($model, $dbEx);
+                $this->noDbConnectionExceptionActions($row, $dbEx);
                 continue;
             }
         }
@@ -134,9 +136,9 @@ class DataProcessor
         }
 
         echo PHP_EOL;
-        $models = null;
+        $rows = null;
         $memory = memory_get_usage()/1024;
-        Logger::error("END PROCESS PAGE : "  . $currentPage . " of " . $pagesCount . "; MEMORY USED: {$memory}");
+        Logger::info("END PROCESS PAGE : "  . $currentPage . " of " . $pagesCount . "; MEMORY USED: {$memory}");
 
         return true;
     }
@@ -161,45 +163,29 @@ class DataProcessor
      */
     protected function executeQuery()
     {
-        //Переделать абстрагировать
-        throw new \Exception("Не адаптировано по ларавел");
-        $query = $this->dataHandler->getQuery();
-        $this->dataHandler->setupQuery($query);
-        $condition = $this->queryCondition;
-        if (is_callable($condition)){
-            call_user_func($condition, $query);
-        }
-
-        $config = [
-            'pagination' => [
-                'pageSize' => $this->pageSize,
-                'pageSizeParam' => false,
-                'forcePageParam' => false,
-                'page' => $this->currentPage
-            ],
-            'query' => $query
-        ];
-        $dataProvider = $this->dataHandler->getDataProvider($config );
-        $models = $dataProvider->getModels();
-        if (! $this->totalCount) {
-            $this->totalCount = $dataProvider->getTotalCount();
-        }
-
-        $this->currentPage = $dataProvider->getPagination()->getPage();
-        if ($this->currentPage+1 == $dataProvider->getPagination()->getPageCount()){
+        $dbh = new PDO('mysql:dbname=jmart;host=db', 'root', '123');
+        $offset = $this->pageSize * (int) ($this->currentPage);
+        $sth = $dbh->prepare("SELECT SQL_CALC_FOUND_ROWS * FROM `cscart_companies` LIMIT {$this->pageSize} OFFSET {$offset}");
+        $sth->execute();
+        $rows = $sth->fetchAll(PDO::FETCH_ASSOC);
+        if (! $rows ){
             $this->isDone = true;
         }
 
-        if ($dataProvider->getCount() == 0){
+        if ($this->currentPage+1 == $this->pageCount ){
             $this->isDone = true;
+        }
+
+        if(! $this->totalCount) {
+            $sth = $dbh->prepare("SELECT FOUND_ROWS();");
+            $sth->execute();
+            $this->totalCount = $sth->fetchColumn();
+            $this->pageCount = ceil($this->totalCount/$this->pageSize);
         }
 
         $this->currentPage +=1;
-        $query = null;
-        $config = null;
-        $dataProvider = null;
 
-        return $models;
+        return $rows;
     }
 
     /**
@@ -270,7 +256,7 @@ class DataProcessor
      */
     public function noDbConnectionExceptionActions($data, $exception)
     {
-        Logger::error( " ОШИБКА!!!  ".$exception->getMessage().PHP_EOL);
+        Logger::info( " ОШИБКА!!!  ".$exception->getMessage().PHP_EOL);
     }
 
     /**
