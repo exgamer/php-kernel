@@ -10,4 +10,6 @@ interface DataModifyInterface
     public function create(array $data);
     public function update(array $data, $condition);
     public function delete($condition);
+    public function deleteById($id);
+    public function updateById($id, $data);
 }
