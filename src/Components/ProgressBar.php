@@ -26,7 +26,7 @@ class ProgressBar {
      *  @param int  Length of progressBar (in console characters)
      */
     function __construct($total, $bar_length = 70) {
-        $this->done = 0;
+        $this->done = 1;
         $this->perc = 0;
         $this->perc = 0;
         $this->total = $total;
