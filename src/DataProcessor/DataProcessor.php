@@ -119,7 +119,7 @@ class DataProcessor
         $this->beforePageProcess();
         $count = count($rows);
         $bar = new ProgressBar($count);
-        foreach ($rows as $k => $row) {
+        foreach ($this->row($rows) as $k => $row) {
             try{
                 $this->prepareModel($row);
                 $this->processModel($row);
@@ -141,6 +141,12 @@ class DataProcessor
         Logger::info("END PROCESS PAGE : "  . $currentPage . " of " . $pagesCount . "; MEMORY USED: {$memory}");
 
         return true;
+    }
+
+    protected function row($rows) {
+        foreach ($rows as $k => $row) {
+            yield $k => $row;
+        }
     }
 
     /**
