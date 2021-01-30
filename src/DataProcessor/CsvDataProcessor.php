@@ -40,7 +40,6 @@ class CsvDataProcessor extends DataProcessor
         }
 
         $this->getCsvRowsCount();
-        $row = 1;
         if (($handle = fopen($this->dataHandler->getQuery(), "r")) !== FALSE) {
             Logger::info("START PROCESS");
             $bar = new ProgressBar($this->totalCount);
