@@ -39,18 +39,18 @@ class CsvDataProcessor extends DataProcessor
             return true;
         }
 
-        $count = $this->getCsvRowsCount();
+        $this->getCsvRowsCount();
         $row = 1;
         if (($handle = fopen($this->dataHandler->getQuery(), "r")) !== FALSE) {
             Logger::info("START PROCESS");
-            $bar = new ProgressBar($count);
-            while (($model = fgetcsv($handle, 0, $this->dataHandler->getDelimeter())) !== FALSE) {
+            $bar = new ProgressBar($this->totalCount);
+            foreach ($this->models($handle) as $model) {
                 $this->prepareModel($model);
                 $this->processModel($model);
                 $this->finishProcessModel($model);
                 $bar->update();
-                $row++;
             }
+
             fclose($handle);
             $memory = memory_get_usage()/1024;
             echo PHP_EOL;
@@ -62,19 +62,25 @@ class CsvDataProcessor extends DataProcessor
         return true;
     }
 
+    protected function models($handle) {
+        while (($model = fgetcsv($handle, 0, $this->dataHandler->getDelimeter())) !== FALSE) {
+            yield $model;
+        }
+    }
+
     public function getCsvRowsCount()
     {
         Logger::info("Counting rows" );
         $rowCount = 1;
-        $handle = fopen($this->dataHandler->getQuery(), "r");
-        while(!feof($handle)){
-            $line = fgets($handle);
-            $rowCount++;
+        if (($handle = fopen($this->dataHandler->getQuery(), "r")) !== FALSE) {
+            foreach ($this->models($handle) as $model) {
+                $rowCount++;
+            }
+
+            fclose($handle);
         }
 
-        fclose($handle);
         Logger::info("File has " . $rowCount . " rows"  );
-
-        return $rowCount;
+        $this->totalCount = $rowCount;
     }
 }
