@@ -5,7 +5,6 @@ namespace Citizenzet\Php\Core\DataProcessor;
 use Citizenzet\Php\Core\Components\Logger;
 use Citizenzet\Php\Core\Components\ProgressBar;
 use Exception;
-use GuzzleHttp\Client;
 
 /**
  * Class CsvDataProcessor
