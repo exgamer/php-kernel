@@ -4,6 +4,7 @@ namespace Citizenzet\Php\Core\DataProcessor;
 
 use Citizenzet\Php\Core\Components\Logger;
 use Citizenzet\Php\Core\Components\ProgressBar;
+use Citizenzet\Php\Core\Helpers\ArrayHelper;
 use Citizenzet\Php\Core\Helpers\ContainerHelper;
 use Citizenzet\Php\Core\Traits\ConfigAwareConstructorTrait;
 use Citizenzet\Php\Core\Traits\DataTrait;
@@ -119,7 +120,7 @@ class DataProcessor
         $this->beforePageProcess();
         $count = count($rows);
         $bar = new ProgressBar($count);
-        foreach ($this->row($rows) as $k => $row) {
+        foreach (ArrayHelper::generator($rows) as $k => $row) {
             try{
                 $this->prepareModel($row);
                 $this->processModel($row);
@@ -141,12 +142,6 @@ class DataProcessor
         Logger::info("END PROCESS PAGE : "  . $currentPage . " of " . $pagesCount . "; MEMORY USED: {$memory}");
 
         return true;
-    }
-
-    protected function row($rows) {
-        foreach ($rows as $k => $row) {
-            yield $k => $row;
-        }
     }
 
     /**

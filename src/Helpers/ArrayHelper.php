@@ -9,6 +9,17 @@ namespace Citizenzet\Php\Core\Helpers;
 class ArrayHelper
 {
     /**
+     * Генератор
+     * @param $array
+     * @return \Generator
+     */
+    public static function generator($array) {
+        foreach ($array as $key => $value) {
+            yield $key => $value;
+        }
+    }
+
+        /**
      * Converts an object or an array of objects into an array.
      * @param object|array|string $object the object to be converted into an array
      * @param array $properties a mapping from object class names to the properties that need to put into the resulting arrays.
