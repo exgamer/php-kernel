@@ -62,7 +62,7 @@ abstract class AmqpDataHandler extends DataHandler
     {
         return [
             'passive'     => false,
-            'durable'     => true,
+            'durable'     => false,
             'exclusive'   => false,
             'auto_delete' => false,
         ];
