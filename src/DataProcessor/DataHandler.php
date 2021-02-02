@@ -2,6 +2,8 @@
 
 namespace Citizenzet\Php\Core\DataProcessor;
 
+use Citizenzet\Php\Core\Traits\ConfigAwareConstructorTrait;
+
 /**
  * Вспомогательный класс для обработки данных
  *
@@ -9,6 +11,8 @@ namespace Citizenzet\Php\Core\DataProcessor;
  */
 abstract class DataHandler implements DataHandlerInterface
 {
+    use ConfigAwareConstructorTrait;
+    
     protected $processor;
 
     /**
