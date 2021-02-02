@@ -51,15 +51,15 @@ class AmpqpDataProcessor extends DataProcessor
             false,
             false
         );
-        Logger::info("[*] Waiting for messages. To exit press CTRL+C");
+        Logger::info("Waiting for messages. To exit press CTRL+C");
         $callback = function ($msg)  {
-            Logger::info("[*] Start process message");
+            Logger::info("Start process message");
             $this->prepareModel($msg);
             $this->processModel($msg);
             $this->finishProcessModel($msg);
-            $memory = memory_get_usage()/1024;
-            Logger::info("[*] End process message; MEMORY USED: {$memory}");
             $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+            $memory = memory_get_usage()/1024;
+            Logger::info("End process message; MEMORY USED: {$memory}");
         };
         $channel->basic_qos(null, 1, null);
         $channel->basic_consume(
