@@ -42,15 +42,10 @@ class AmpqpDataProcessor extends DataProcessor
             return true;
         }
         
-        $connection = new AMQPStreamConnection($this->dataHandler->getQuery());
+        $connection = new AMQPStreamConnection(... $this->dataHandler->getQuery());
         $channel = $connection->channel();
-        $count = $channel->queue_declare(
-            $this->dataHandler->getQueueName(),
-            false,
-            false,
-            false,
-            false
-        );
+        $queueParams = array_unshift($this->dataHandler->getQueueParams(), $this->dataHandler->getQueueName());
+        $count = $channel->queue_declare(... $queueParams);
         Logger::info("Waiting for messages. To exit press CTRL+C");
         $callback = function ($msg)  {
             Logger::info("Start process message");

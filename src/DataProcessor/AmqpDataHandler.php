@@ -58,23 +58,23 @@ abstract class AmqpDataHandler extends DataHandler
         throw new Exception("set queue name");
     }
 
-//    public function getQueueParams()
-//    {
-//        return [
-//            'passive'     => false,
-//            'durable'     => true,
-//            'exclusive'   => false,
-//            'auto_delete' => false,
-//        ];
-//    }
-//
-//    public function getExchangeParams()
-//    {
-//        return [
-//            'type'        => 'direct', // more info at http://www.rabbitmq.com/tutorials/amqp-concepts.html
-//            'passive'     => false,
-//            'durable'     => false, // the exchange will survive server restarts
-//            'auto_delete' => false,
-//        ];
-//    }
+    public function getQueueParams()
+    {
+        return [
+            'passive'     => false,
+            'durable'     => true,
+            'exclusive'   => false,
+            'auto_delete' => false,
+        ];
+    }
+
+    public function getExchangeParams()
+    {
+        return [
+            'type'        => 'direct', // more info at http://www.rabbitmq.com/tutorials/amqp-concepts.html
+            'passive'     => false,
+            'durable'     => false, // the exchange will survive server restarts
+            'auto_delete' => false,
+        ];
+    }
 }
