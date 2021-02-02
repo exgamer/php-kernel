@@ -10,7 +10,8 @@
     ],
     "require": {
         "php": ">=7.0.0",
-        "guzzlehttp/guzzle" : "~6.0"
+        "guzzlehttp/guzzle" : "~6.0",
+        "php-amqplib/php-amqplib": "^2.12"
     },
     "autoload": {
         "psr-4": {
