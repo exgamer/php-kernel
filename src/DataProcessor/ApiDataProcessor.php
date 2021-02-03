@@ -2,7 +2,6 @@
 
 namespace Citizenzet\Php\Core\DataProcessor;
 
-use Citizenzet\Php\Core\Enums\HttpCodeEnum;
 use GuzzleHttp\Client;
 use Exception;
 
@@ -42,7 +41,7 @@ class ApiDataProcessor extends DataProcessor
         $client = new Client(['timeout' => 0]);
         $res = $client->request($this->dataHandler->method, $this->dataHandler->getQuery(), $this->dataHandler->queryConfig);
         $this->dataHandler->responseStatus = $res->getStatusCode();
-        if (in_array($res->getStatusCode(), [HttpCodeEnum::OK, HttpCodeEnum::CREATED])){
+        if ($res->getStatusCode() === 200){
 //            $data = json_decode($res->getBody()->getContents(), true);
             $this->dataHandler->responseBodyContent = $res->getBody()->getContents();
         }
