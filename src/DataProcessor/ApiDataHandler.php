@@ -14,6 +14,9 @@ abstract class ApiDataHandler extends DataHandler
     public $method = 'GET';
     public $queryConfig = [];
 
+    public $responseStatus;
+    public $responseBodyContent;
+
     /**
      * @return string
      * @throws Exception
