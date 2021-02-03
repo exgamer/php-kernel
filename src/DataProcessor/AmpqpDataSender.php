@@ -4,6 +4,7 @@ namespace Citizenzet\Php\Core\DataProcessor;
 
 use Citizenzet\Php\Core\Components\Logger;
 use Citizenzet\Php\Core\Components\ProgressBar;
+use Citizenzet\Php\Core\Helpers\ArrayHelper;
 use Exception;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -75,7 +76,7 @@ class AmpqpDataSender extends DataProcessor
         $channel->queue_declare(... $queueParams);
         Logger::info("Start sending messages");
         $bar = new ProgressBar(count($this->dataToSend));
-        foreach($this->dataToSend as $data){
+        foreach(ArrayHelper::generator($this->dataToSend) as $data){
             $this->prepareModel($data);
             $this->prepareDataForSending($data);
             $msg = new AMQPMessage($data);
