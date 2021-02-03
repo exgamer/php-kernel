@@ -12,7 +12,7 @@ use Citizenzet\Php\Core\Traits\ConfigAwareConstructorTrait;
 abstract class DataHandler implements DataHandlerInterface
 {
     use ConfigAwareConstructorTrait;
-    
+
     protected $processor;
 
     /**

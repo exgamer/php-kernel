@@ -16,7 +16,7 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
  * ];
  *
  *
- * CsvDataProcessor::exec($config);
+ * AmpqpDataProcessor::exec($config);
  *
  * Class AmpqpDataProcessor
  * @package Citizenzet\Php\Core\DataProcessor
