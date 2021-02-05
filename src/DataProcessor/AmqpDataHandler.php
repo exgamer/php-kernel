@@ -20,7 +20,7 @@ abstract class AmqpDataHandler extends DataHandler
             $this->getPassword(),
         ];
     }
-    
+
     /**
      * @return string
      * @throws Exception
@@ -29,7 +29,7 @@ abstract class AmqpDataHandler extends DataHandler
     {
         throw new Exception("set rabbitmq host");
     }
-    
+
     public function getPort()
     {
         return 5672;
@@ -76,5 +76,10 @@ abstract class AmqpDataHandler extends DataHandler
             'durable'     => false, // the exchange will survive server restarts
             'auto_delete' => false,
         ];
+    }
+
+    public function onMessageError($exception)
+    {
+
     }
 }

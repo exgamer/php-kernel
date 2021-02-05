@@ -7,6 +7,7 @@ use Citizenzet\Php\Core\Components\Logger;
 use Citizenzet\Php\Core\Components\ProgressBar;
 use Exception;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * Прием сообщений из rabbit mq
@@ -42,6 +43,7 @@ class AmpqpDataProcessor extends DataProcessor
             return true;
         }
 
+
         $connection = new AMQPStreamConnection(... $this->dataHandler->getQuery());
         $channel = $connection->channel();
         $queueName = $this->dataHandler->getQueueName();
@@ -50,30 +52,43 @@ class AmpqpDataProcessor extends DataProcessor
         $queueParams = array_values($queueParams);
         $count = $channel->queue_declare(... $queueParams);
         Logger::info("Waiting for messages. To exit press CTRL+C");
-        $callback = function ($msg)  {
+        $callback = function ($msg) use ($channel, $queueName) {
+            $originalMsg = clone $msg;
             Logger::info("Start process message");
-            $this->prepareModel($msg);
-            $this->processModel($msg);
-            $this->finishProcessModel($msg);
-            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
-            $memory = memory_get_usage()/1024;
-            Logger::info("End process message; MEMORY USED: {$memory}");
+            try {
+                $this->prepareModel($msg);
+                $this->processModel($msg);
+                $this->finishProcessModel($msg);
+                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+                $memory = memory_get_usage() / 1024;
+                Logger::info("End process message; MEMORY USED: {$memory}");
+            }catch (\Exception $ex) {
+                //вернуть назад в очередь
+//                    $channel->basic_publish($originalMsg, '', $queueName);
+                Logger::error($ex->getMessage());
+                $this->onMessageError($ex);
+            }
         };
         $channel->basic_qos(null, 1, null);
         $channel->basic_consume(
             $queueName,
-            '', 
-            false, 
-            false, 
-            false, 
-            false, 
+            '',
+            false,
+            false,
+            false,
+            false,
             $callback);
         while (count($channel->callbacks)) {
             $channel->wait();
         }
         $channel->close();
         $connection->close();
-        
+
         return true;
+    }
+
+    public function onMessageError($exception)
+    {
+        $this->dataHandler->onMessageError($exception);
     }
 }
