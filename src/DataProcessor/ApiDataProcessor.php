@@ -44,6 +44,9 @@ class ApiDataProcessor extends DataProcessor
         if ($res->getStatusCode() === 200){
 //            $data = json_decode($res->getBody()->getContents(), true);
             $this->dataHandler->responseBodyContent = $res->getBody()->getContents();
+            $this->prepareModel($this->dataHandler->responseBodyContent);
+            $this->processModel($this->dataHandler->responseBodyContent);
+            $this->finishProcessModel($this->dataHandler->responseBodyContent);
         }
     }
 
