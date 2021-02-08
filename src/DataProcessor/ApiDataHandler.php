@@ -25,4 +25,9 @@ abstract class ApiDataHandler extends DataHandler
     {
         throw new Exception("set url");
     }
+
+    public function error($status, $data)
+    {
+
+    }
 }

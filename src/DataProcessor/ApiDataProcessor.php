@@ -47,6 +47,8 @@ class ApiDataProcessor extends DataProcessor
             $this->prepareModel($this->dataHandler->responseBodyContent);
             $this->processModel($this->dataHandler->responseBodyContent);
             $this->finishProcessModel($this->dataHandler->responseBodyContent);
+        }else{
+            $this->error($res->getStatusCode(), $this->dataHandler->responseBodyContent);
         }
     }
 
@@ -58,5 +60,10 @@ class ApiDataProcessor extends DataProcessor
     public function getResponseBodyContent()
     {
         return $this->dataHandler->responseBodyContent;
+    }
+
+    public function error($status, $data)
+    {
+        $this->dataHandler->error($status, $data);
     }
 }
