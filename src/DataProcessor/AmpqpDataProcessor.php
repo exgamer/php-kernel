@@ -26,6 +26,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 class AmpqpDataProcessor extends DataProcessor
 {
     public $bySinglePage = true;
+    public $ackOnError = false;
 
     public function init()
     {
@@ -67,7 +68,9 @@ class AmpqpDataProcessor extends DataProcessor
 //                    $channel->basic_publish($originalMsg, '', $queueName);
                 Logger::error($ex->getMessage());
                 $this->onMessageError($ex);
-//                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+                if ($this->ackOnError) {
+                    $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
+                }
             }
         };
         $channel->basic_qos(null, 1, null);
