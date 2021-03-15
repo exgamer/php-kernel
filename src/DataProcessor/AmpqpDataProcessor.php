@@ -26,7 +26,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 class AmpqpDataProcessor extends DataProcessor
 {
     public $bySinglePage = true;
-    public $ackOnError = false;
+    public $ackOnError = true;
 
     public function init()
     {
@@ -65,7 +65,7 @@ class AmpqpDataProcessor extends DataProcessor
                 Logger::info("End process message; MEMORY USED: {$memory}");
             }catch (\Exception $ex) {
                 //вернуть назад в очередь
-//                    $channel->basic_publish($originalMsg, '', $queueName);
+//              $channel->basic_publish($originalMsg, '', $queueName);
                 Logger::error($ex->getMessage());
                 $this->onMessageError($ex);
                 if ($this->ackOnError) {
