@@ -75,7 +75,7 @@ class AmpqpDataProcessor extends DataProcessor
             $queueName,
             '',
             false,
-            false,
+            true,
             false,
             false,
             $callback);
