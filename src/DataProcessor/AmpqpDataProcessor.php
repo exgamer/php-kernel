@@ -57,6 +57,7 @@ class AmpqpDataProcessor extends DataProcessor
             $originalMsg = clone $msg;
             Logger::info("Start process message");
             try {
+                gc_collect_cycles();
                 $this->prepareModel($msg);
                 $this->processModel($msg);
                 $this->finishProcessModel($msg);
