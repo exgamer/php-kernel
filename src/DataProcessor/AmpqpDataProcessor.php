@@ -58,7 +58,6 @@ class AmpqpDataProcessor extends DataProcessor
             Logger::info("Start process message");
             try {
                 gc_collect_cycles();
-                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
                 $this->prepareModel($msg);
                 $this->processModel($msg);
                 $this->finishProcessModel($msg);
@@ -68,11 +67,9 @@ class AmpqpDataProcessor extends DataProcessor
                 //вернуть назад в очередь
 //              $channel->basic_publish($originalMsg, '', $queueName);
                 Logger::error($ex->getMessage());
-                $this->onMessageError($ex);
-                if ($this->ackOnError) {
-                    $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
-                }
             }
+            
+            $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
         };
         $channel->basic_qos(null, 1, null);
         $channel->basic_consume(
