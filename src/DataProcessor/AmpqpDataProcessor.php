@@ -45,23 +45,23 @@ class AmpqpDataProcessor extends DataProcessor
         }
 
 
-        $connection = new AMQPStreamConnection(... $this->dataHandler->getQuery());
+        $connection = new AMQPStreamConnection($this->dataHandler->getHost(), $this->dataHandler->getPort(), $this->dataHandler->getUser(), $this->dataHandler->getPassword());
         $channel = $connection->channel();
         $queueName = $this->dataHandler->getQueueName();
-        $queueParams = $this->dataHandler->getQueueParams();
-        array_unshift($queueParams, $queueName);
-        $queueParams = array_values($queueParams);
-        $count = $channel->queue_declare(... $queueParams);
+//        $queueParams = $this->dataHandler->getQueueParams();
+//        array_unshift($queueParams, $queueName);
+//        $queueParams = array_values($queueParams);
+        $channel->queue_declare($queueName,  false, false, false, false);
         Logger::info("Waiting for messages. To exit press CTRL+C");
         $callback = function ($msg) use ($channel, $queueName) {
             $originalMsg = clone $msg;
             Logger::info("Start process message");
             try {
                 gc_collect_cycles();
+                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
                 $this->prepareModel($msg);
                 $this->processModel($msg);
                 $this->finishProcessModel($msg);
-                $msg->delivery_info['channel']->basic_ack($msg->delivery_info['delivery_tag']);
                 $memory = memory_get_usage() / 1024;
                 Logger::info("End process message; MEMORY USED: {$memory}");
             }catch (\Exception $ex) {
